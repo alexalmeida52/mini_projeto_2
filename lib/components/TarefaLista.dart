@@ -67,7 +67,6 @@ class _TarefaListaState extends State<TarefaLista> {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Column(
               children: [
@@ -131,10 +130,10 @@ class _TarefaListaState extends State<TarefaLista> {
           ],
         ),
         Container(
-          height: 300,
           child: widget._tarefaLista.isEmpty
               ? Text('Nenhuma tarefa cadastrada')
               : ListView.builder(
+                  shrinkWrap: true,
                   itemCount: _tarefasFiltradas.length,
                   itemBuilder: (context, index) {
                     final tarefa = _tarefasFiltradas[index];

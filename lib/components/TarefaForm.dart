@@ -16,7 +16,7 @@ class _TarefaFormState extends State<TarefaForm> {
   final _tarefaController = TextEditingController();
   final _obsController = TextEditingController();
   DateTime _dataSelecionada = DateTime.now();
-  
+
   _submitForm() {
     final titulo = _tarefaController.text;
     final obs = _obsController.text;
@@ -35,6 +35,7 @@ class _TarefaFormState extends State<TarefaForm> {
     }
 
     widget.onSubmit(titulo, _dataSelecionada, priority, obs);
+    Navigator.pop(context);
   }
 
   _showDatePicker() {
