@@ -6,6 +6,8 @@ import 'package:mini_projeto_2/components/TarefaForm.dart';
 import 'package:mini_projeto_2/components/TarefaLista.dart';
 import 'package:mini_projeto_2/models/tarefa.dart';
 import 'package:flutter/material.dart';
+import 'package:mini_projeto_2/screens/tarefa.dart';
+import 'package:mini_projeto_2/utils/app_routes.dart';
 
 import 'package:intl/intl.dart';
 
@@ -17,7 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(),
+      initialRoute: '/',
+      routes: {
+        AppRoutes.HOME: (ctx) => MyHomePage(),
+        AppRoutes.TAREFA_DETAIL: (ctx) => TarefaScreen(),
+      },
       theme: ThemeData().copyWith(
           colorScheme: ThemeData()
               .colorScheme
@@ -75,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         id: 't2',
         titulo: 'Assistir',
         data: DateTime.now().subtract(Duration(days: 5)),
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().subtract(Duration(days: 15)),
         priority: 3,
         obs: 'Spider Man'),
     Tarefa(

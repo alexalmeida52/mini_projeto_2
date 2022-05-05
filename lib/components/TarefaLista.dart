@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 
+import '../utils/app_routes.dart';
+
 class TarefaLista extends StatefulWidget {
   List<Tarefa> _tarefaLista;
   void Function(int) onSubmit;
@@ -16,10 +18,23 @@ class TarefaLista extends StatefulWidget {
 class _TarefaListaState extends State<TarefaLista> {
   @override
   List<Tarefa> _tarefasFiltradas = [];
+
   initState() {
     // at the beginning, all users are shown
     _applyFilter(0);
     super.initState();
+  }
+
+  void _selectedTarefa(BuildContext context, Tarefa tarefa) {
+    /*
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+      return CountryPlacesScreen(country);
+    }));
+    */
+    Navigator.of(context).pushNamed(
+      AppRoutes.TAREFA_DETAIL,
+      arguments: tarefa
+    );
   }
 
   static const Map<String, int> itens = {
@@ -137,82 +152,87 @@ class _TarefaListaState extends State<TarefaLista> {
                   itemCount: _tarefasFiltradas.length,
                   itemBuilder: (context, index) {
                     final tarefa = _tarefasFiltradas[index];
-                    return Card(
-                      child: Stack(children: [
-                        Row(
-                          children: [
-                            Stack(children: [
-                              Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 2,
-                                        color:
-                                            DateTime.now().isBefore(tarefa.data)
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : isSameDay(tarefa.data)
-                                                    ? Colors.orange
-                                                    : Colors.red),
-                                  ),
-                                  margin: EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                    vertical: 10,
-                                  ),
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                      DateFormat('d MMM y').format(tarefa.data),
-                                      style: TextStyle(
-                                          color: DateTime.now()
-                                                  .isBefore(tarefa.data)
+                    return InkWell(
+                      onTap: () => {
+                        _selectedTarefa(context, tarefa)
+                      },
+                      child: Card(
+                        child: Stack(children: [
+                          Row(
+                            children: [
+                              Stack(children: [
+                                Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 2,
+                                          color: 
+                                          DateTime.now().isBefore(tarefa.data)
                                               ? Theme.of(context)
                                                   .colorScheme
                                                   .primary
                                               : isSameDay(tarefa.data)
                                                   ? Colors.orange
-                                                  : Colors.red))),
-                              Container(
-                                  color: tarefa.priority == 1
-                                      ? Colors.green
-                                      : tarefa.priority == 2
-                                          ? Colors.blue
-                                          : Colors.red,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                      Tarefa.getPriorityLabel(tarefa.priority),
-                                      style: TextStyle(color: Colors.white),
+                                                  : Colors.red),
                                     ),
-                                  )),
-                            ]),
-                            Text(tarefa.titulo),
-                          ],
-                        ),
-                        Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Text(
-                                DateFormat('dd/MM/yyyy')
-                                    .format(tarefa.createdAt),
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black.withOpacity(0.5)))),
-                        Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Center(
-                              child: IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Colors.red,
-                                onPressed: () {
-                                  widget.onSubmit(index);
-                                  setState(() {
-                                    _tarefasFiltradas.removeAt(index);
-                                  });
-                                },
-                              ),
-                            ))
-                      ]),
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 10,
+                                    ),
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                        DateFormat('d MMM y').format(tarefa.data),
+                                        style: TextStyle(
+                                            color: DateTime.now()
+                                                    .isBefore(tarefa.data)
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                : isSameDay(tarefa.data)
+                                                    ? Colors.orange
+                                                    : Colors.red))),
+                                Container(
+                                    color: tarefa.priority == 1
+                                        ? Colors.green
+                                        : tarefa.priority == 2
+                                            ? Colors.blue
+                                            : Colors.red,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: Text(
+                                        Tarefa.getPriorityLabel(tarefa.priority),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    )),
+                              ]),
+                              Text(tarefa.titulo),
+                            ],
+                          ),
+                          Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Text(
+                                  DateFormat('dd/MM/yyyy')
+                                      .format(tarefa.createdAt),
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black.withOpacity(0.5)))),
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Center(
+                                child: IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    widget.onSubmit(index);
+                                    setState(() {
+                                      _tarefasFiltradas.removeAt(index);
+                                    });
+                                  },
+                                ),
+                              ))
+                        ]),
+                      ),
                     );
                   },
                 ),
