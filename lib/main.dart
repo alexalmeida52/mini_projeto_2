@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _removerTarefa(index) {
     setState(() {
       _tarefas.removeAt(index);
+      _applyFilter(this._priority, this._isChecked, this._dataSelecionada);
     });
   }
 
