@@ -8,22 +8,15 @@ import '../utils/app_routes.dart';
 class TarefaLista extends StatefulWidget {
   List<Tarefa> _tarefaLista;
   void Function(int) onSubmit;
+  void Function(int, bool, DateTime) _applyFilters;
 
-  TarefaLista(this._tarefaLista, this.onSubmit);
+  TarefaLista(this._tarefaLista, this.onSubmit, this._applyFilters);
 
   @override
   State<TarefaLista> createState() => _TarefaListaState();
 }
 
 class _TarefaListaState extends State<TarefaLista> {
-  @override
-  List<Tarefa> _tarefasFiltradas = [];
-
-  initState() {
-    // at the beginning, all users are shown
-    _applyFilter(0);
-    super.initState();
-  }
 
   void _selectedTarefa(BuildContext context, Tarefa tarefa) {
     /*
@@ -62,7 +55,7 @@ class _TarefaListaState extends State<TarefaLista> {
         _dataSelecionada = pickedDate;
       });
 
-      _applyFilter(_itemValue);
+      widget._applyFilters(_itemValue, isChecked, _dataSelecionada);
     });
   }
 
@@ -94,7 +87,7 @@ class _TarefaListaState extends State<TarefaLista> {
                       onChanged: (bool? value) {
                         setState(() {
                           isChecked = value!;
-                          _applyFilter(_itemValue);
+                          widget._applyFilters(_itemValue, isChecked, _dataSelecionada);
                         });
                       },
                     ),
@@ -133,7 +126,7 @@ class _TarefaListaState extends State<TarefaLista> {
                         if (newValue != null) {
                           setState(() {
                             _itemValue = newValue;
-                            _applyFilter(_itemValue);
+                            widget._applyFilters(_itemValue, isChecked, _dataSelecionada);
                           });
                         }
                       },
@@ -149,9 +142,9 @@ class _TarefaListaState extends State<TarefaLista> {
               ? Text('Nenhuma tarefa cadastrada')
               : ListView.builder(
                   shrinkWrap: true,
-                  itemCount: _tarefasFiltradas.length,
+                  itemCount: widget._tarefaLista.length,
                   itemBuilder: (context, index) {
-                    final tarefa = _tarefasFiltradas[index];
+                    final tarefa = widget._tarefaLista[index];
                     return InkWell(
                       onTap: () => {
                         _selectedTarefa(context, tarefa)
@@ -225,9 +218,6 @@ class _TarefaListaState extends State<TarefaLista> {
                                   color: Colors.red,
                                   onPressed: () {
                                     widget.onSubmit(index);
-                                    setState(() {
-                                      _tarefasFiltradas.removeAt(index);
-                                    });
                                   },
                                 ),
                               ))
@@ -242,23 +232,8 @@ class _TarefaListaState extends State<TarefaLista> {
   }
 
   bool isSameDay(DateTime date) {
-    print(date);
     return DateFormat('d MMM y').format(DateTime.now()) ==
         DateFormat('d MMM y').format(date);
-  }
-
-  bool compareDate(DateTime date, DateTime date2) {
-    return DateFormat('d MMM y').format(date) ==
-        DateFormat('d MMM y').format(date2);
-  }
-
-  void _applyFilter(int priority) {
-    List<Tarefa> ls = widget._tarefaLista
-        .where((tarefa) => returnItem(tarefa, priority))
-        .toList();
-    setState(() {
-      _tarefasFiltradas = ls;
-    });
   }
 
   Color getColor(int priority) {
@@ -274,25 +249,5 @@ class _TarefaListaState extends State<TarefaLista> {
     }
 
     return color;
-  }
-
-  bool returnItem(Tarefa tarefa, int priority) {
-    if (priority == 0) {
-      if (isChecked) {
-        return compareDate(tarefa.data, _dataSelecionada);
-      } else {
-        return true;
-      }
-    } else {
-      if (tarefa.priority == priority) {
-        if (isChecked) {
-          return compareDate(tarefa.data, _dataSelecionada);
-        } else {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    }
   }
 }

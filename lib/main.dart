@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_projeto_2/components/TarefaForm.dart';
 import 'package:mini_projeto_2/components/TarefaLista.dart';
 import 'package:mini_projeto_2/models/tarefa.dart';
@@ -51,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _tarefas.add(novaTarefa);
+      _applyFilter(this._priority, this._isChecked, this._dataSelecionada);
     });
 
     print(titulo);
@@ -100,28 +102,96 @@ class _MyHomePageState extends State<MyHomePage> {
         obs: 'Manhã, tarde e noite')
   ];
 
+  List<Tarefa> _tarefasFiltradas = [];
+
+  initState() {
+    // at the beginning, all users are shown
+    _tarefasFiltradas = _tarefas;
+    super.initState();
+  }
+
+  int _priority = 0;
+  bool _isChecked = false;
+  DateTime _dataSelecionada = DateTime.now();
+
+  void _applyFilter(int priority, bool isChecked, DateTime dataSelecionada) {
+    this._priority = priority;
+    this._isChecked = isChecked;
+    this._dataSelecionada = dataSelecionada;
+
+    print('Aplicando filtros');
+    List<Tarefa> ls = this
+        ._tarefas
+        .where((tarefa) =>
+            returnItem(tarefa, priority, isChecked, dataSelecionada))
+        .toList();
+    setState(() {
+      _tarefasFiltradas = ls;
+      print(_tarefasFiltradas.length);
+    });
+  }
+
+  bool returnItem(
+      Tarefa tarefa, int priority, bool isChecked, DateTime _dataSelecionada) {
+    if (priority == 0) {
+      if (isChecked) {
+        return compareDate(tarefa.data, _dataSelecionada);
+      } else {
+        return true;
+      }
+    } else {
+      if (tarefa.priority == priority) {
+        if (isChecked) {
+          return compareDate(tarefa.data, _dataSelecionada);
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool compareDate(DateTime date, DateTime date2) {
+    return DateFormat('d MMM y').format(date) ==
+        DateFormat('d MMM y').format(date2);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('To Do List'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            TarefaLista(_tarefas, _removerTarefa),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                TarefaLista(_tarefasFiltradas, _removerTarefa, _applyFilter),
+              ],
+            ),
+          ),
+          Positioned.fill(
+              child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Text("Powered by José Alex",
+                  style: GoogleFonts.adventPro(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black.withOpacity(0.4))),
+            ),
+          ))
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet<void>(
             context: context,
             builder: (BuildContext context) {
-              return Container(
-                child: TarefaForm(_novaTarefa)
-              );
+              return Container(child: TarefaForm(_novaTarefa));
             },
           );
         },
